@@ -1,95 +1,73 @@
-<!doctype html>
-<html lang="{{ app()->getLocale() }}">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-        <title>Laravel</title>
-
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
-
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Raleway', sans-serif;
-                font-weight: 100;
-                height: 100vh;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100vh;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @if (Auth::check())
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ url('/login') }}">Login</a>
-                        <a href="{{ url('/register') }}">Register</a>
-                    @endif
-                </div>
-            @endif
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
-                </div>
-
-                <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+@section('content')
+<script src="{{ asset('js/sha256.js') }}"></script>
+<div class="content row text-center">
+    <div class="well col-sm-8 col-sm-offset-2">
+        <form class="form-horizontal" id="printinfo">
+            <div class="form-group">
+                <label for="maker" class="control-label col-sm-3">Ethereum Addres of Maker</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="maker" name="maker">
                 </div>
             </div>
-        </div>
-    </body>
-</html>
+            <div class="form-group">
+                <label for="designer" class="control-label col-sm-3">Ethereum Addres of designer</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="designer" name="designer">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="objname" class="control-label col-sm-3">Object Name</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="objname" name="objname">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="g-code" class="control-label col-sm-3">G-code File</label>
+                <div class="col-sm-9">
+                    <input type="file" id="g-code" name="g-code" style="display:none;" accept=".gcode" onchange="$('#fake_input_file').val($(this).val());">
+                    <input type="button"  class="btn btn-primary col-sm-4" value="ファイル選択" onClick="$('#g-code').click();">
+                    <input id="fake_input_file" class="col-sm-8" readonly type="text" placeholder="ファイル未選択"  onClick="$('#g-code').click();">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="g-codehash" class="control-label col-sm-3">G-code Hash</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="g-codehash" name="g-codehash" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="apikey" class="control-label col-sm-3">ApiKey for Octprint</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="apikey" name="apikey">
+                </div>
+            </div>
+            <input type="button" value="Print" class="btn btn-primary col-sm-4 col-sm-offset-4 " onclick="print()">
+        </form>
+    </div>
+</div>
+<script>
+var obj1 = document.getElementById("g-code");
+
+//ダイアログでファイルが選択された時
+obj1.addEventListener("change",function(evt){
+
+    var file = evt.target.files;
+    var reader = new FileReader();
+    reader.readAsText(file[0]);
+    reader.onload = function(ev){
+        text = reader.result;
+        var shaObj = new jsSHA("SHA-256", "TEXT", 1);
+        shaObj.update(text);
+        var sha256digest = shaObj.getHash("HEX");
+
+        $("#g-codehash").val(sha256digest);
+    }
+},false);
+function print(){
+    var fd = new FormData($('#printinfo').get(0));
+
+}
+</script>
+@endsection
