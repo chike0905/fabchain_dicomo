@@ -18,6 +18,52 @@ class PrintController extends Controller
             ];
 
         //make Transaction data
+        /*
+         * Contract code
+            contract Fabchain {
+                string public _name;
+                string public _gcodehash;
+                address public _maker;
+                address public _designer;
+
+                event Transfarmaker(address indexed from, address indexed to);
+                event Transfardesigner(address indexed from, address indexed to);
+
+                function Fabchain(string name, string gcodehash, adderss designer){
+                    _name = name;
+                    _gcodehash = gcodehash;
+                    _maker = msg.sender;
+                    _maker = designer;
+                }
+                function transfarmaker(address to){
+                    if(msg.sender == _maker){
+                        throw;
+                    }
+                    _maker = to;
+                    Transfarmaker(msg.sender,to);
+                }
+                function transfardesigner(address to){
+                    if(msg.sender == _designer){
+                        throw;
+                    }
+                    _designer = to;
+                    Transfardesigner(msg.sender,to);
+                }
+                function getname() constant returns (string name){
+                    return _name;
+                }
+                function getmaker() constant returns (address maker){
+                    return _maker;
+                }
+                function getdesigner() constant returns (address designer){
+                    return _designer;
+                }
+                function getgcodehash() constant returns (string gcodehash){
+                    return _gcodehash;
+                }
+            }
+         */
+        $contract = "";
         $nameascii = '';
         $i = 0;
         while (($char = substr($data["name"], $i++, 1)) !=='') {
