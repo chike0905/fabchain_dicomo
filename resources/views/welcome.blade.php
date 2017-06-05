@@ -32,9 +32,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="g-codehash" class="control-label col-sm-3">G-code Hash</label>
+                <label for="gcodehash" class="control-label col-sm-3">G-code Hash</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="g-codehash" name="g-codehash" readonly>
+                    <input type="text" class="form-control" id="gcodehash" name="gcodehash" readonly>
                 </div>
             </div>
             <div class="form-group">
@@ -62,12 +62,30 @@ obj1.addEventListener("change",function(evt){
         shaObj.update(text);
         var sha256digest = shaObj.getHash("HEX");
 
-        $("#g-codehash").val(sha256digest);
+        $("#gcodehash").val(sha256digest);
     }
 },false);
 function print(){
     var fd = new FormData($('#printinfo').get(0));
-
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "POST",
+            data: fd,
+            url : './print',
+            processData: false,
+            contentType: false,
+            dataType : "json",
+            success : function(json) {
+                console.log(json);
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log( textStatus + ":\n" + errorThrown);
+            }
+    });
 }
 </script>
 @endsection
