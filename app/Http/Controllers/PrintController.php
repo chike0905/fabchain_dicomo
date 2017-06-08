@@ -66,18 +66,32 @@ class PrintController extends Controller
         $contract = "";
         $nameascii = '';
         $i = 0;
-        while (($char = substr($data["name"], $i++, 1)) !=='') {
-            $nameascii .= sprintf('%x', ord($char));
+
+        foreach(str_split($data["name"]) as $char){
+            $nameascii .= dechex(ord($char));
         }
         $namelen = dechex(strlen($data["name"]));
         $namelen = str_pad($namelen, 64, 0, STR_PAD_LEFT);
         $nameascii = str_pad($nameascii, 64, 0, STR_PAD_RIGHT);
-        $hashascii = '';
-        $i = 0;
-        while (($char = substr($data["hash"], $i++, 1)) !== '') {
-            $hashascii .= sprintf('%x', ord($char));
-        }
 
+        $hashascii = '';
+        foreach(str_split($data["hash"]) as $char){
+            $nameascii .= dechex(ord($char));
+        }
+        $hashlen = dechex(strlen($data["hash"]));
+        $hashlen = str_pad($hashlen, 64, 0, STR_PAD_LEFT);
+        $hashascii = str_pad($hashascii, 64, 0, STR_PAD_RIGHT);
+
+        $dsgnlen = dechex(strlen($data["designer"]));
+        $lendsgn = str_pad($dsgnlen, 64, 0, STR_PAD_LEFT);
+
+        //point of data parametara
+        $point_of_name = str_pad("1", 64, 0, STR_PAD_LEFT);
+        $point_of_gcodehash = str_pad("2", 64, 0, STR_PAD_LEFT);
+        $point_of_designer = str_pad("3", 64, 0, STR_PAD_LEFT);
+
+        $data = $point_of_name.$point_of_gcodehash.$point_of_designer.$namelen.$nameascii.$hashlen.$hashascii.$lendsgn.$data["designer"];
+        $postdata = $conntact.$data;
         //printing
         return Response::json($data);
     }
