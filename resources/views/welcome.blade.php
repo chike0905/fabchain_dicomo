@@ -46,6 +46,44 @@
             <input type="button" value="Print" class="btn btn-primary col-sm-4 col-sm-offset-4 " onclick="print()">
         </form>
     </div>
+    <div id="ethinfo" class="panel panel-default col-sm-10 col-sm-offset-1">
+        <div class="panel-heading">
+            <h3>Object Info Saved on Blockchain</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-striped">
+                <tr id="result">
+                    <th>Result</th><td></td>
+                </tr>
+                <tr id="TXadd">
+                    <th>Object Print TX</th><td></td>
+                </tr>
+                <tr id="cntadd">
+                    <th>Object Contract Address</th><td></td>
+                </tr>
+                <tr id="makeradd">
+                    <th>Ethereum Addres of Maker</th><td></td>
+                </tr>
+                <tr id="designadd">
+                    <th>Ethereum Addres of designer</th><td></td>
+                </tr>
+                <tr id="objname">
+                    <th>Object Name</th><td></td>
+                </tr>
+                <tr id="ghash">
+                    <th>G-code Hash</th><td></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="panel  panel-default col-sm-10 col-sm-offset-1">
+        <div class="panel-heading">
+            <h3>Printing info</h3>
+        </div>
+        <div class="panel-body">
+            now printing?
+        </div>
+    </div>
 </div>
 <script>
 var obj1 = document.getElementById("g-code");
@@ -65,6 +103,8 @@ obj1.addEventListener("change",function(evt){
         $("#gcodehash").val(sha256digest);
     }
 },false);
+
+var getcntflag = 0;
 function print(){
     var fd = new FormData($('#printinfo').get(0));
     $.ajaxSetup({
@@ -81,6 +121,46 @@ function print(){
             dataType : "json",
             success : function(json) {
                 console.log(json);
+                if(json.geth.result){
+                   $("#ethinfo #TXadd td").text(json.geth.result);
+                   $("#ethinfo #result td").text("success");
+                   var id = setInterval(function(){
+                       var getcnt = getcontinfo(json.geth.result);
+                       if(getcntflag == 1){　
+                           clearInterval(id);
+                       }}, 3000);
+                }else{
+                   $("#ethinfo #result td").text(json.geth.error.code+":"+json.geth.error.message);
+                }
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log( textStatus + ":\n" + errorThrown);
+            }
+    });
+}
+function getcontinfo(txadd){
+    console.log({tx:txadd});
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "POST",
+            data:JSON.stringify({tx:txadd}),
+            contentType:'application/json',
+            url : './getcnt',
+            dataType : "json",
+            success : function(json) {
+                console.log(json);
+                if(json.result == true){
+                    $("#ethinfo #cntadd td").text(json.data.cntadd);
+                    $("#ethinfo #makeradd td").text(json.data.makeradd);
+                    $("#ethinfo #designadd td").text(json.data.designadd);
+                    $("#ethinfo #objname td").text(json.data.objname);
+                    $("#ethinfo #ghash td").text(json.data.ghash);
+                    getcntflag = 1;
+                }
             },
             error : function(XMLHttpRequest, textStatus, errorThrown) {
                 console.log( textStatus + ":\n" + errorThrown);

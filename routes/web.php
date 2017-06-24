@@ -20,3 +20,4 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::post('/print', 'PrintController@index');
+Route::post('/getcnt', 'PrintController@getcnt');
