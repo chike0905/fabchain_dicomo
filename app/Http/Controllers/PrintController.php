@@ -117,7 +117,7 @@ class PrintController extends Controller
             CURLOPT_POSTFIELDS  => [
                 'file' => new \CURLFile(storage_path()."/app/".$filename,"application/octet-stream",$gcode->getClientOriginalName()),
                 'select' => true,
-                'print' => true
+                'print' => false //not printing for test
             ],
             ]);
         $res = curl_exec($ch);
